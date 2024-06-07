@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:gsheet2/data.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'mainscreen.dart';
+
 
 class FirstScreen extends StatefulWidget {
   const FirstScreen({Key? key}) : super(key: key);
@@ -16,6 +18,15 @@ class _FirstScreenState extends State<FirstScreen> {
   List<Map<String, String>> filteredList = [];
   TextEditingController searchController = TextEditingController();
 
+  void _launchURL() async {
+    const url = 'https://docs.google.com/spreadsheets/d/1C2JKFHUOrbDxcBHKAu58utkK6-OfYQMLBdaxwK1JuCw/edit#gid=0';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -23,12 +34,12 @@ class _FirstScreenState extends State<FirstScreen> {
   }
 
   Future<void> _openBox() async {
-    print("Инициализация коробки 'students' в FirstScreen...");
+    print("Initializing 'students' box in FirstScreen...");
     if (!Hive.isBoxOpen('students')) {
       await Hive.openBox('students');
-      print("Коробка 'students' успешно открыта в FirstScreen.");
+      print("'students' box successfully opened in FirstScreen.");
     } else {
-      print("Коробка 'students' уже была открыта в FirstScreen.");
+      print("'students' box was already open in FirstScreen.");
     }
     db.createInitialData();
     dataList = db.loadData();
@@ -48,18 +59,15 @@ class _FirstScreenState extends State<FirstScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Главная Страница'),
-        centerTitle: true,
-      ),
       body: Column(
         children: <Widget>[
+          SizedBox(height: 40,),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
             child: TextField(
               controller: searchController,
               decoration: const InputDecoration(
-                labelText: 'Искать',
+                labelText: 'Search',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(25.0)),
@@ -67,14 +75,20 @@ class _FirstScreenState extends State<FirstScreen> {
               ),
             ),
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+
+
+            ],
+          ),
           Expanded(
             child: ListView.builder(
               itemCount: filteredList.length,
               itemBuilder: (context, index) {
                 final data = filteredList[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   child: Card(
                     elevation: 4,
                     shape: RoundedRectangleBorder(
@@ -82,13 +96,13 @@ class _FirstScreenState extends State<FirstScreen> {
                     ),
                     child: ListTile(
                       leading: const Icon(Icons.person, size: 40),
-                      title: Text('Имя: ${data['name']}'),
+                      title: Text('Name: ${data['name']}'),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Телефон: ${data['phoneNumber']}'),
-                          Text('Адрес: ${data['address']}'),
-                          Text('ИИН: ${data['IIN']}'),
+                          Text('Phone: ${data['phoneNumber']}'),
+                          Text('Address: ${data['address']}'),
+                          Text('IIN: ${data['IIN']}'),
                         ],
                       ),
                     ),
@@ -101,17 +115,16 @@ class _FirstScreenState extends State<FirstScreen> {
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    const Color.fromARGB(255, 158, 162, 166), // Button color
+                elevation: 3,
+                backgroundColor: const Color.fromARGB(255, 159, 124, 221), // Button color
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25.0), // Rounded corners
                 ),
-                padding: const EdgeInsets.symmetric(
-                    vertical: 12.0, horizontal: 24.0), // Button padding
+                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0), // Button padding
               ),
               child: const Text(
-                'Регистрация',
-                style: TextStyle(fontSize: 17),
+                '               Add User               ',
+                style: TextStyle(fontSize: 17, color: Colors.white),
               ),
               onPressed: () {
                 _returnDataFromSecondScreen(context);
