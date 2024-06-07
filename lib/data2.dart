@@ -14,7 +14,7 @@ class OnboardingContent {
 
 List<OnboardingContent> contents = [
   OnboardingContent(
-    title: "Sync Data Easily",
+    title: "Sync Data Easily ",
     image: 'assets/images/img3.png',
     description: "Send, receive, data with Google Sheets.",
   ),
